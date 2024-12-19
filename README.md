@@ -2,6 +2,8 @@
 
 Welcome to the **Tic Tac Toe Game**! This is a simple yet interactive version of the classic Tic Tac Toe game, built using **HTML, CSS, and JavaScript**. The design features a sleek, futuristic look with a smokey animation effect, and uses the Futurist font for a modern aesthetic.
 
+Preview of the website: https://raw.githack.com/anbusan19/Tictactoe/refs/heads/main/run.html
+
 ## Features
 
 - **Responsive Design**: Fully responsive layout that works seamlessly across different screen sizes.
@@ -15,11 +17,6 @@ Welcome to the **Tic Tac Toe Game**! This is a simple yet interactive version of
 2. Players take turns to place their mark ("X" or "O") in an empty cell.
 3. The first player to align three marks vertically, horizontally, or diagonally wins.
 4. If all cells are filled and no player has won, the game ends in a draw.
-
-## Live Demo
-
-Check out the live version of the game hosted on GitHub Pages:
-[Live Preview](https://your-username.github.io/tic-tac-toe)
 
 ## Technologies Used
 
