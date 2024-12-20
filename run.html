@@ -33,6 +33,8 @@
 
         .theme-light {
             background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(220, 220, 220, 1) 50%, rgba(255, 255, 255, 1) 100%);
+            background-size: 400% 400%;
+            animation: smokyFlow 25s ease infinite;
             color: #000000;
         }
 
@@ -163,7 +165,7 @@
             align-items: center;
         }
 
-        .rounds-select {
+        .rounds-select, .mode-select {
             padding: 8px 16px;
             border-radius: 25px;
             background: rgba(255, 255, 255, 0.2);
@@ -216,6 +218,10 @@
                 <option value="3">3 Rounds</option>
                 <option value="5">5 Rounds</option>
             </select>
+            <select class="mode-select" id="modeSelect">
+                <option value="2p">2 Players</option>
+                <option value="ai">vs Computer</option>
+            </select>
         </div>
 
         <div class="setup-container" id="setupContainer">
@@ -257,6 +263,7 @@
             let totalRounds = 1;
             let currentRound = 1;
             let scores = { X: 0, O: 0 };
+            let isComputerMode = false;
 
             const cells = document.querySelectorAll('.cell');
             const status = document.getElementById('status');
@@ -264,6 +271,7 @@
             const winnerDisplay = document.getElementById('winner');
             const themeToggle = document.getElementById('themeToggle');
             const roundsSelect = document.getElementById('roundsSelect');
+            const modeSelect = document.getElementById('modeSelect');
             const scoreBoard = document.getElementById('scoreBoard');
             const startBtn = document.getElementById('startBtn');
             const setupContainer = document.getElementById('setupContainer');
@@ -280,9 +288,50 @@
                 document.body.classList.toggle('theme-light');
             });
 
+            const makeComputerMove = () => {
+                if (!gameActive || currentPlayer === 'X') return;
+                
+                // Simple AI: First try to win, then block player, then random move
+                const emptyCells = board.reduce((acc, cell, idx) => 
+                    cell === '' ? [...acc, idx] : acc, []);
+                    
+                let moveIndex;
+                
+                // Try each empty cell
+                for (let idx of emptyCells) {
+                    // Try computer's move
+                    board[idx] = 'O';
+                    if (checkWinner()) {
+                        moveIndex = idx;
+                        board[idx] = ''; // Reset for actual move
+                        break;
+                    }
+                    // Try blocking player
+                    board[idx] = 'X';
+                    if (checkWinner()) {
+                        moveIndex = idx;
+                        board[idx] = ''; // Reset for actual move
+                        break;
+                    }
+                    board[idx] = ''; // Reset for next iteration
+                }
+                
+                // If no strategic move found, choose random
+                if (moveIndex === undefined && emptyCells.length > 0) {
+                    moveIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                }
+                
+                setTimeout(() => {
+                    if (moveIndex !== undefined) {
+                        handleClick(moveIndex);
+                    }
+                }, 500);
+            };
+
             // Start game functionality
             startBtn.addEventListener('click', () => {
                 totalRounds = parseInt(roundsSelect.value);
+                isComputerMode = modeSelect.value === 'ai';
                 setupContainer.style.display = 'none';
                 gameContainer.style.display = 'block';
                 resetGame();
@@ -349,6 +398,11 @@
 
                 currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
                 status.textContent = `Player ${currentPlayer}'s Turn`;
+
+                // Add computer move if in AI mode
+                if (isComputerMode && currentPlayer === 'O') {
+                    makeComputerMove();
+                }
             };
 
             const resetGame = (fullReset = true) => {
@@ -381,7 +435,6 @@
                 resetGame(true);
             });
 
-            // Initial setup
             gameContainer.style.display = 'none';
             updateScoreBoard();
         })();
